@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+</head>
+<div style="background-color:powderblue;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-4">
+		<form action='/add' method="post">
+		  <div class="form-group">
+			<label for="exampleFormControlInput1">A new Project</label>
+			<input type="text" class="form-control" name="name_form" placeholder="Enter project name">
+		  </div>
+
+		  <div class="form-group">
+			<label for="exampleFormControlSelect1">Select Project Type</label>
+			<select class="form-control" name="type_form">
+			  <option>internal</option>
+			  <option>external</option>
+
+			</select>
+		  </div>
+
+		  <div class="form-group">
+			<label for="exampleFormControlInput2">Start Date</label>
+			<input type="date" class="form-control" name="start_date" placeholder="dd/mm/yyyy">
+		  </div>
+
+		  <div class="form-group">
+			<label for="exampleFormControlInput3">Expected End Date</label>
+			<input type="date" class="form-control" name="end_date" placeholder="dd/mm/yyyy">
+		  </div>
+             <div class="form-group">
+			<label for="exampleFormControlInput3">Amount</label>
+			<input type="number" class="form-control" name="amount" placeholder="0">
+		  </div>
+
+		  <div class="form-group">
+			<textarea class="form-control" name="description" placeholder="Description" rows="2"></textarea>
+		  </div>
+          <input type="submit" class="btn btn-primary" value="Add Project">
+
+		</form>
+         </div>
+
+         <div class="col-md-8">
+
+             <div>
+                 <h3>All Projects</h3>
+             </div>
+
+             <table id="myTable"class="table table-bordered">
+			  <thead>
+				<tr>
+				  <th scope="col">ID</th>
+				  <th scope="col">TITLE</th>
+				  <th scope="col">TYPE</th>
+				  <th scope="col">START</th>
+				  <th scope="col">END</th>
+				  <th scope="col">AMOUNT</th>
+				  <th scope="col">DESC</th>
+				  <th scope="col">STATUS</th>
+				  <th scope="col">HANDLE</th>
+
+				</tr>
+			  </thead>
+			  <tbody>
+              {% for project in projects_to_send %}
+				<tr>
+				  <th scope="row">{{project.id}}</th>
+                  <td>{{project.name}}</td>
+				  <td>{{project.type}}</td>
+				  <td>{{project.start_date}}</td>
+				  <td>{{project.end_date}}</td>
+				  <td>{{project.amount}}</td>
+				  <td>{{project.description}}</td>
+                    <td> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit{{ project.id }}">edit</button></td>
+      <td > <a href="/delete/{{ project.id }}" class="btn">DELETE</a> </td>
+				</tr>
+              {% endfor %}
+
+			  </tbody>
+			</table>
+
+
+         </div>
+    </div>
+</div>
+
+            <!-- Don't forget the "|safe"! -->
+<div id="chart">
+   <embed type="image/svg+xml" src= {{ chart|safe }} />
+</div>
+
+{% for project in projects_to_send %}
+<div class="modal fade" id="edit{{ project.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button></div>
+
+        <div id="chart">
+   <embed type="image/svg+xml" src= {{ chart|safe }} />
+</div>
+
+<!-- Messagebox dialog pop up. -->
+      <div class="modal-body">
+       <form action="/update/{{ project.id }}" method="post">
+		  <div class="form-group">
+			<label for="exampleFormControlInput1">Update Project</label>
+			<input type="text" class="form-control" name="name_edit" value="{{ project.name }}">
+		  </div>
+
+		  <div class="form-group">
+			<label for="exampleFormControlSelect1">Select Project Type</label>
+			<select class="form-control" name="type_form_edit">
+			 <option {% if project.type == "internal" %}selected{% endif %}>internal</option>
+			  <option {% if project.type == "external" %}selected{% endif %}>external</option>
+			</select>
+		  </div>
+
+
+		  <div class="form-group">
+			<label for="exampleFormControlInput2">Start Date</label>
+			<input type="date" class="form-control" name="start_date_edit" value="{{ project.start_date }}">
+		  </div>
+
+		  <div class="form-group">
+			<label for="exampleFormControlInput3">Expected End Date</label>
+			<input type="date" class="form-control" name="end_date_edit" value="{{ project.end_date }}">
+		  </div>
+
+          <div class="form-group">
+			<label for="exampleFormControlInput3">Amount</label>
+			<input type="number" class="form-control" name="amount_edit" value="{{ project.amount}}">
+		  </div>
+
+		  <div class="form-group">
+			<textarea class="form-control" name="description_edit" rows="2">{{ project.description }}</textarea>
+		  </div>
+          <input type="submit" class="btn btn-primary" value="Update Project">
+		</form>
+      </div><!-- An end to msgbox pop up dialog. -->
+
+    <div class="modal-footer"></div>
+
+    </div>
+  </div>
+</div>
+
+ {% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+<script type="text/javascript">
+    $(document).ready( function () {
+    $('#myTable').DataTable();
+} );
+    </script>
+</body>
+</html>
